@@ -53,3 +53,46 @@ spinning this up in k8s would require some secret handeling like proposed in [so
 * In case we're running in k8s we could also use [sealed-secrets](https://github.com/bitnami-labs/sealed-secrets) which alows encryption of secrets that only the sealed secret controller would be able to decrypt.
 
 * Store the secret as part of the CI/CD tool's secret management e.g. store the secret as a github secret, or in an azure environment value which we can then inject into the pipeline during pipeline run?
+
+* Seems like pulumi also has a way of handling secrets build into it self
+https://www.pulumi.com/blog/managing-secrets-with-pulumi/
+
+## Using kubeseal with sealed-secret from helm
+
+Look at this [link](https://github.com/bitnami-labs/sealed-secrets/tree/main/helm/sealed-secrets#using-kubeseal)
+
+
+## Current solution
+
+Currently the way I have choosen to handle this is using sealed-secrets this is a public-private encryption method, this encrypts a value using a public key, exposed by the cluster, which can then be decrypted by the cluster using the private key it has stored.
+
+This allows us to store our secrets publicly because, you need the private key to get any information from the value published.
+
+I choose this solution to be a little rebal since Nicolai stated and I quote:
+>Jeg vil blive ked af det hvis der er en secret, i nogen som helst form, checked ind i repo’et et sted.
+
+So technically there is a secret in the repo now, but it's not really that useful without the private key yo depricpt it.
+
+I choose to write this in Pulumi since it was new and sounded interresting and I wanted to see how it worked..
+
+## To demo
+
+1. Get the two pod names
+    ```
+    kubectl get pods -o custom-columns=NAME:.metadata.name
+    ```
+
+2. Port-forward the deployment no password
+    ```
+    kubectl port-forward $(kubectl get pods -o custom-columns=NAME:.metadata.name | grep 'no-pass') 8080:8080
+    ```
+
+3. Open [localhost:8080](http://localhost:8080) in a new private browser window.<br>
+   Try to log in using the username and password.
+
+4. Port-forward the deployment with password
+    ```
+    kubectl port-forward $(kubectl get pods -o custom-columns=NAME:.metadata.name | grep -v 'no-pass' | tr -d 'NAME') 8080:8080
+    ```
+5. Open [localhost:8080](http://localhost:8080) in a new private browser window.<br>
+   Try to log in using the username and password.
