@@ -77,22 +77,6 @@ I choose to write this in Pulumi since it was new and sounded interresting and I
 
 ## To demo
 
-1. Get the two pod names
-    ```
-    kubectl get pods -o custom-columns=NAME:.metadata.name
-    ```
+Take a look at the [jupyter notebook](demo.ipynb)
 
-2. Port-forward the deployment no password
-    ```
-    kubectl port-forward $(kubectl get pods -o custom-columns=NAME:.metadata.name | grep 'no-pass') 8080:8080
-    ```
-
-3. Open [localhost:8080](http://localhost:8080) in a new private browser window.<br>
-   Try to log in using the username and password.
-
-4. Port-forward the deployment with password
-    ```
-    kubectl port-forward $(kubectl get pods -o custom-columns=NAME:.metadata.name | grep -v 'no-pass' | tr -d 'NAME') 8080:8080
-    ```
-5. Open [localhost:8080](http://localhost:8080) in a new private browser window.<br>
-   Try to log in using the username and password.
+and the [slides](https://docs.google.com/presentation/d/19ewztTC-K_UOhMWUYabJak4_Xp3FljPWRRqwjnNxX7U/edit#slide=id.p)
