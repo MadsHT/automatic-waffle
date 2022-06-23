@@ -1,6 +1,7 @@
 import * as k8s from "@pulumi/kubernetes";
 import * as kx from "@pulumi/kubernetesx";
 
+// Deployment of a demo container that references a secret
 const appLabels = { app: "sec-demo", pass: "true" };
 const deployment = new k8s.apps.v1.Deployment("demo-container", {
     spec: {
@@ -28,6 +29,7 @@ const deployment = new k8s.apps.v1.Deployment("demo-container", {
     }
 });
 
+// Deployment that has no secret ref
 const appLabelsNoPass = { app: "sec-demo", pass: "false" };
 const deploymentNoPass = new k8s.apps.v1.Deployment("demo-container-no-pass", {
     spec: {
@@ -46,7 +48,7 @@ const deploymentNoPass = new k8s.apps.v1.Deployment("demo-container-no-pass", {
 });
 
 
-// Deploy the bitnami/wordpress chart.
+// Deploy the bitnami/sealed-secrets chart
 const sealedSecrets = new k8s.helm.v3.Chart("sealed-secrets", {
     version: "2.2.x",
     chart: "sealed-secrets",
@@ -59,7 +61,7 @@ const sealedSecrets = new k8s.helm.v3.Chart("sealed-secrets", {
     },
 });
 
-
+// Deploy a sealed-secret CRD with the login secret for the website
 const demoSecret = new k8s.apiextensions.CustomResource("demo-sec", {
     apiVersion: "bitnami.com/v1alpha1",
     kind: "SealedSecret",
